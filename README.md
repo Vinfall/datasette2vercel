@@ -1,11 +1,9 @@
-# datasette-publish-vercel
+# datasette2vercel
 
-[![PyPI](https://img.shields.io/pypi/v/datasette-publish-vercel.svg)](https://pypi.org/project/datasette-publish-vercel/)
-[![Changelog](https://img.shields.io/github/v/release/simonw/datasette-publish-vercel?include_prereleases&label=changelog)](https://github.com/simonw/datasette-publish-vercel/releases)
-[![Tests](https://github.com/simonw/datasette-publish-vercel/workflows/Test/badge.svg)](https://github.com/simonw/datasette-publish-vercel/actions?query=workflow%3ATest)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/simonw/datasette-publish-vercel/blob/main/LICENSE)
+[![Tests](https://github.com/Vinfall/datasette2vercel/workflows/Test/badge.svg)](https://github.com/Vinfall/datasette2vercel/actions?query=workflow%3ATest)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Vinfall/datasette2vercel/blob/main/LICENSE)
 
-Datasette plugin for publishing data using [Vercel](https://vercel.com/).
+Datasette plugin to deploy on [Vercel](https://vercel.com/), forked from [datasette-publish-vercel](https://github.com/simonw/datasette-publish-vercel)
 
 ## Installation
 
@@ -15,9 +13,9 @@ Install this plugin in the same environment as Datasette.
 
 ## Usage
 
-First, install the Vercel CLI tool by [following their instructions](https://vercel.com/download).
+First, install vercel-cli [following instructions](https://vercel.com/download).
 
-Run `vercel login` to login to (or create) an account.
+Run `vercel login` to login/create an account.
 
 Now you can use `datasette publish vercel` to publish your data:
 
