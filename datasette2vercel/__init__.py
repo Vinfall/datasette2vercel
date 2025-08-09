@@ -215,7 +215,6 @@ def _publish_vercel(
 
     vercel_json_content = json.dumps(
         {
-            "name": project,
             "builds": [{"src": "index.py", "use": "@vercel/python@4.6.0"}],
             "routes": [{"src": "(.*)", "dest": "index.py"}],
         },
