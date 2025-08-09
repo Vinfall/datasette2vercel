@@ -1,0 +1,45 @@
+[project]
+name = "datasette2vercel"
+version = "0.15.0"
+description = "Datasette plugin to deploy on Vercel"
+keywords = []
+authors = [{ name = "Simon Willison" }, { name = "Vinfall" }]
+requires-python = ">=3.12"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = "Apache-2.0"
+classifiers = ["Private :: Do Not Upload"]
+dependencies = ["datasette>=0.59"]
+[project.optional-dependencies]
+test = ["pytest>=8.3.4"]
+
+[project.entry-points.datasette]
+publish_vercel = "datasette2vercel"
+
+[project.urls]
+homepage = "https://github.com/Vinfall/datasette2vercel"
+source = "https://github.com/Vinfall/datasette2vercel"
+
+[tool.ruff]
+# force-exclude = true
+unsafe-fixes = true
+
+# https://docs.astral.sh/ruff/rules/
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN",
+    "E501", # EditorConfig
+    "COM", # commas
+    "D1", # docstring
+    "D212",
+    "D203", # prefer D211
+    "ERA", # commented-out-code
+    "FIX", # fixme
+    "TD002", # todo
+    "TD003",
+    "PLR2004", # magic-value-comparison
+    "PTH", # flake8-use-pathlib: slower than os
+    "RET505", # superfluous-else-return
+    "T20", # print
+]
+# unfixable = ["F401"]
