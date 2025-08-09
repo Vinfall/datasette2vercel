@@ -1,13 +1,14 @@
-from click.testing import CliRunner
-from datasette import cli
-from unittest import mock
 import json
 import os
 import pathlib
-import pytest
 import re
 import subprocess
 import textwrap
+from unittest import mock
+
+import pytest
+from click.testing import CliRunner
+from datasette import cli
 
 
 @mock.patch("shutil.which")
@@ -34,7 +35,7 @@ def test_publish_vercel_requires_project(mock_which):
         assert "Missing option '--project'" in result.output
 
 
-@pytest.mark.parametrize("bad_name", ("ABC", "-boo", "".join(["too-long"] * 10)))
+@pytest.mark.parametrize("bad_name", ["ABC", "-boo", "".join(["too-long"] * 10)])
 @mock.patch("shutil.which")
 def test_publish_vercel_invalid_project_name(mock_which, bad_name):
     mock_which.return_value = True
@@ -262,17 +263,16 @@ def test_publish_vercel_generate(generated_app_dir):
 
 def test_publish_vercel_static(generated_app_dir):
     assert (
-        "body { color: red }"
-        == (pathlib.Path(generated_app_dir) / "static" / "my.css").read_text()
-    )
+        pathlib.Path(generated_app_dir) / "static" / "my.css"
+    ).read_text() == "body { color: red }"
 
 
 def test_publish_vercel_requirements(generated_app_dir):
-    requirements = set(
+    requirements = {
         l.strip()
-        for l in open(os.path.join(generated_app_dir, "requirements.txt")).readlines()
+        for l in open(os.path.join(generated_app_dir, "requirements.txt"))
         if l.strip()
-    )
+    }
     assert {"datasette", "pysqlite3-binary"} == requirements
 
 
@@ -284,12 +284,12 @@ def test_help_in_readme(request):
     expected = block_re.search(readme).group(1).strip()
     runner = CliRunner()
     result = runner.invoke(cli.cli, ["publish", "vercel", "--help"], terminal_width=88)
-    actual = "$ datasette publish vercel --help\n\n{}".format(result.output)
+    actual = f"$ datasette publish vercel --help\n\n{result.output}"
 
     if request.config.getoption("--rewrite-readme"):
         readme_path.write_text(
             block_re.sub(
-                "```\n{}```".format(actual).replace("Usage: cli", "Usage: datasette"),
+                f"```\n{actual}```".replace("Usage: cli", "Usage: datasette"),
                 readme,
             )
         )
@@ -298,9 +298,9 @@ def test_help_in_readme(request):
     # actual has "Usage: cli package [OPTIONS] FILES"
     # because it doesn't know that cli will be aliased to datasette
     expected = expected.replace("Usage: datasette", "Usage: cli")
-    assert (
-        expected.strip() == actual.strip()
-    ), "README out of date - try runnning: pytest --rewrite-readme"
+    assert expected.strip() == actual.strip(), (
+        "README out of date - try runnning: pytest --rewrite-readme"
+    )
 
 
 @mock.patch("shutil.which")

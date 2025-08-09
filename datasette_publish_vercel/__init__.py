@@ -1,21 +1,22 @@
+import json
+import os
+import pathlib
+import re
+import shutil
+from subprocess import CalledProcessError, run
+
+import click
+from click.types import CompositeParamType
 from datasette import hookimpl
 from datasette.publish.common import (
     add_common_publish_arguments_and_options,
     fail_if_publish_binary_not_installed,
 )
 from datasette.utils import (
+    ValueAsBooleanError,
     temporary_docker_directory,
     value_as_boolean,
-    ValueAsBooleanError,
 )
-import click
-from click.types import CompositeParamType
-from subprocess import run, CalledProcessError
-import json
-import os
-import pathlib
-import re
-import shutil
 
 INDEX_PY = """
 import asyncio
@@ -88,6 +89,7 @@ class Setting(CompositeParamType):
         else:
             # Should never happen:
             self.fail("Invalid option")
+        return
 
 
 class ProjectName(click.ParamType):
@@ -193,9 +195,8 @@ def _publish_vercel(
     crossdb,
 ):
     if vercel_json and generate_vercel_json:
-        raise click.ClickException(
-            "Cannot use both --vercel-json and --generate-vercel-json"
-        )
+        msg = "Cannot use both --vercel-json and --generate-vercel-json"
+        raise click.ClickException(msg)
     fail_if_publish_binary_not_installed(
         "vercel", "Vercel", "https://vercel.com/download"
     )
@@ -230,7 +231,8 @@ def _publish_vercel(
         try:
             json.loads(vercel_json_content)
         except ValueError:
-            raise click.ClickException("--vercel-json contents must be valid JSON")
+            msg = "--vercel-json contents must be valid JSON"
+            raise click.ClickException(msg)
 
     with temporary_docker_directory(
         files,
@@ -271,10 +273,10 @@ def _publish_vercel(
         datasette_install = "datasette"
         if branch:
             datasette_install = (
-                "https://github.com/simonw/datasette/archive/{}.zip".format(branch)
+                f"https://github.com/simonw/datasette/archive/{branch}.zip"
             )
         open("requirements.txt", "w").write(
-            "\n".join([datasette_install, "pysqlite3-binary"] + list(install))
+            "\n".join([datasette_install, "pysqlite3-binary", *list(install)])
         )
         if generate_dir:
             # Copy these to the specified directory
@@ -282,9 +284,9 @@ def _publish_vercel(
             click.echo(
                 "Your generated application files have been written to:", err=True
             )
-            click.echo("    {}\n".format(generate_dir), err=True)
+            click.echo(f"    {generate_dir}\n", err=True)
             click.echo("To deploy using Vercel, run the following:")
-            click.echo("    cd {}".format(generate_dir), err=True)
+            click.echo(f"    cd {generate_dir}", err=True)
             click.echo("    vercel --prod".format(generate_dir), err=True)
         else:
             # Run the deploy with Vercel
@@ -300,7 +302,7 @@ def _publish_vercel(
             if scope:
                 cmd.extend(["--scope", scope])
             # Add the secret
-            cmd.extend(["--env", "DATASETTE_SECRET={}".format(secret)])
+            cmd.extend(["--env", f"DATASETTE_SECRET={secret}"])
             try:
                 run(cmd, check=True)
             except CalledProcessError as ex:
@@ -313,12 +315,12 @@ def publish_subcommand(publish):
     @add_common_publish_arguments_and_options
     @add_vercel_options
     def vercel(*args, **kwargs):
-        "Publish to https://vercel.com/"
+        """Publish to https://vercel.com/."""
         _publish_vercel(*args, **kwargs)
 
     @publish.command()
     @add_common_publish_arguments_and_options
     @add_vercel_options
     def now(*args, **kwargs):
-        "Alias for 'datasette publish vercel'"
+        """Alias for 'datasette publish vercel'."""
         _publish_vercel(*args, **kwargs)
