@@ -216,8 +216,7 @@ def _publish_vercel(
     vercel_json_content = json.dumps(
         {
             "name": project,
-            "version": 2,
-            "builds": [{"src": "index.py", "use": "@vercel/python@3.0.7"}],
+            "builds": [{"src": "index.py", "use": "@vercel/python@4.6.0"}],
             "routes": [{"src": "(.*)", "dest": "index.py"}],
         },
         indent=4,
@@ -287,10 +286,10 @@ def _publish_vercel(
             click.echo(f"    {generate_dir}\n", err=True)
             click.echo("To deploy using Vercel, run the following:")
             click.echo(f"    cd {generate_dir}", err=True)
-            click.echo("    vercel --prod".format(generate_dir), err=True)
+            click.echo("    vercel --prod", err=True)
         else:
             # Run the deploy with Vercel
-            cmd = ["vercel", "--confirm"]
+            cmd = ["vercel", "--yes"]
             if debug:
                 cmd.append("--debug")
             if not no_prod:
