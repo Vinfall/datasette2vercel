@@ -53,7 +53,7 @@ def test_publish_vercel_invalid_project_name(mock_which, bad_name):
 
 
 @mock.patch("shutil.which")
-@mock.patch("datasette_publish_vercel.run")
+@mock.patch("datasette2vercel.run")
 @pytest.mark.parametrize("alias", ["vercel", "now"])
 def test_publish_vercel(mock_run, mock_which, alias):
     mock_which.return_value = True
@@ -83,7 +83,7 @@ def test_publish_vercel(mock_run, mock_which, alias):
 
 
 @mock.patch("shutil.which")
-@mock.patch("datasette_publish_vercel.run")
+@mock.patch("datasette2vercel.run")
 def test_publish_vercel_public(mock_run, mock_which):
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
@@ -122,7 +122,7 @@ def test_publish_vercel_public(mock_run, mock_which):
 
 
 @mock.patch("shutil.which")
-@mock.patch("datasette_publish_vercel.run")
+@mock.patch("datasette2vercel.run")
 def test_publish_vercel_token(mock_run, mock_which):
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
@@ -168,7 +168,7 @@ def test_publish_vercel_token(mock_run, mock_which):
 
 @pytest.fixture(scope="session")
 @mock.patch("shutil.which")
-@mock.patch("datasette_publish_vercel.run")
+@mock.patch("datasette2vercel.run")
 def generated_app_dir(mock_run, mock_which, tmp_path_factory):
     appdir = os.path.join(tmp_path_factory.mktemp("generated-app"), "app")
     mock_which.return_value = True
@@ -304,7 +304,7 @@ def test_help_in_readme(request):
 
 
 @mock.patch("shutil.which")
-@mock.patch("datasette_publish_vercel.run")
+@mock.patch("datasette2vercel.run")
 def test_generate_vercel_json(mock_run, mock_which):
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
@@ -351,7 +351,7 @@ def test_vercel_json_errors(tmpdir):
 
 
 @mock.patch("shutil.which")
-@mock.patch("datasette_publish_vercel.run")
+@mock.patch("datasette2vercel.run")
 def test_custom_vercel_json(mock_run, mock_which, tmp_path_factory, tmpdir):
     appdir = os.path.join(tmp_path_factory.mktemp("generated-app-vercel-json"), "app")
     vercel_json = tmpdir / "vercel.json"
