@@ -1,15 +1,28 @@
 # datasette2vercel
 
-[![Tests](https://github.com/Vinfall/datasette2vercel/workflows/Test/badge.svg)](https://github.com/Vinfall/datasette2vercel/actions?query=workflow%3ATest)
+[![Test](https://github.com/Vinfall/datasette2vercel/workflows/Test/badge.svg)](https://github.com/Vinfall/datasette2vercel/actions?query=workflow%3ATest)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Vinfall/datasette2vercel/blob/main/LICENSE)
 
-Datasette plugin to deploy on [Vercel](https://vercel.com/), forked from [datasette-publish-vercel](https://github.com/simonw/datasette-publish-vercel)
+Datasette plugin to deploy on [Vercel](https://vercel.com/), forked from [datasette-publish-vercel](https://github.com/simonw/datasette-publish-vercel).
+
+> [!WARNING]
+> Documentation is NOT updated for now, use with caution!
 
 ## Installation
 
-Install this plugin in the same environment as Datasette.
+> [!NOTE]
+> As this plugin registers `publish vercel` command just like datasette-publish-vercel, remember to uninstall that first before installation.
 
-    datasette install datasette-publish-vercel
+```sh
+# uninstall datasette-publish-vercel to avoid command conflict
+datasette uninstall datasette-publish-vercel
+# build dist
+git clone https://github.com/Vinfall/datasette2vercel
+cd datasette2vercel
+python3 setup.py sdist
+# install from dist
+datasette install dist/datasette2vercel-*.tar.gz
+```
 
 ## Usage
 
@@ -19,7 +32,9 @@ Run `vercel login` to login/create an account.
 
 Now you can use `datasette publish vercel` to publish your data:
 
-    datasette publish vercel my-database.db --project=my-database
+```sh
+datasette publish vercel my-database.db --project=my-database
+```
 
 The `--project` argument is required - it specifies the project name that should be used for your deployment. This will be used as part of the deployment's URL.
 
@@ -34,7 +49,7 @@ The `--project` argument is required - it specifies the project name that should
 
 ### Full help
 
-**Warning:** Some of these options are not yet implemented by this plugin. In particular, the following do not yet work:
+**Warning:** Some of these options are not yet implemented by this plugin. In particular, the followings do not yet work:
 
 - `--extra-options` - use `--setting` described above instead.
 - `--plugin-secret`
@@ -103,7 +118,7 @@ Then run the deploy using:
       --project=my-database \
       --vercel-json=vercel.json
 
-## Setting a `DATASETTE_SECRET`
+## Setting `DATASETTE_SECRET`
 
 Datasette uses [a secret string](https://docs.datasette.io/en/stable/settings.html#configuring-the-secret) for purposes such as signing authentication cookies. This secret is reset when the server restarts, which will sign out any users who are authenticated using a signed cookie.
 
