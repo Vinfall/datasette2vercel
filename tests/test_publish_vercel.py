@@ -315,9 +315,7 @@ def test_generate_vercel_json(mock_run, mock_which):
     )
     assert result.exit_code == 0
     assert json.loads(result.output) == {
-        "name": "foo",
-        "version": 2,
-        "builds": [{"src": "index.py", "use": "@vercel/python@3.0.7"}],
+        "builds": [{"src": "index.py", "use": "@vercel/python@4.6.0"}],
         "routes": [{"src": "(.*)", "dest": "index.py"}],
     }
 
