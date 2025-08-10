@@ -71,7 +71,7 @@ def test_publish_vercel(mock_run, mock_which, alias):
                 mock.call(
                     [
                         "vercel",
-                        "--confirm",
+                        "--yes",
                         "--prod",
                         "--env",
                         "DATASETTE_SECRET=S",
@@ -109,7 +109,7 @@ def test_publish_vercel_public(mock_run, mock_which):
                 mock.call(
                     [
                         "vercel",
-                        "--confirm",
+                        "--yes",
                         "--prod",
                         "--public",
                         "--env",
@@ -151,7 +151,7 @@ def test_publish_vercel_token(mock_run, mock_which):
                 mock.call(
                     [
                         "vercel",
-                        "--confirm",
+                        "--yes",
                         "--prod",
                         "--token",
                         "xyz",
@@ -280,7 +280,7 @@ def test_help_in_readme(request):
     # Ensure the --help output embedded in the README is up-to-date
     readme_path = pathlib.Path(__file__).parent.parent / "README.md"
     readme = readme_path.read_text()
-    block_re = re.compile(r"```(\s*\$ datasette publish.*?)```", re.DOTALL)
+    block_re = re.compile(r"```sh(\s*\$ datasette publish.*?)```", re.DOTALL)
     expected = block_re.search(readme).group(1).strip()
     runner = CliRunner()
     result = runner.invoke(cli.cli, ["publish", "vercel", "--help"], terminal_width=88)

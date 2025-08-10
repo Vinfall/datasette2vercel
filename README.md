@@ -32,9 +32,7 @@ Run `vercel login` to login/create an account.
 
 Now you can use `datasette publish vercel` to publish your data:
 
-```sh
-datasette publish vercel my-database.db --project=my-database
-```
+  datasette publish vercel my-database.db --project=my-database
 
 The `--project` argument is required - it specifies the project name that should be used for your deployment. This will be used as part of the deployment's URL.
 
@@ -60,7 +58,7 @@ $ datasette publish vercel --help
 
 Usage: datasette publish vercel [OPTIONS] [FILES]...
 
-  Publish to https://vercel.com/
+  Publish to https://vercel.com/.
 
 Options:
   -m, --metadata FILENAME         Path to JSON/YAML file containing metadata to publish
