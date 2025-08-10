@@ -1,6 +1,15 @@
 name: Test
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+    # paths-ignore:
+    #   - "**.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -10,20 +19,26 @@ jobs:
         python-version: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        with:
+          persist-credentials: false
+
+      - name: setup Python with uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: actions/cache@v4
-        name: Configure pip caching
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Install dependencies
-        run: |
-          pip install -e '.[test]'
-      - name: Run tests
-        run: |
-          pytest
+          activate-environment: true
+          enable-cache: true
+          prune-cache: false # do not remove pre-built wheels
+          ignore-nothing-to-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+
+      - name: hint on cache hit
+        if: steps.setup-uv.outputs.cache-hit == 'true'
+        run: echo "Hit cache"
+
+      - name: install dependencies
+        run: uv pip install .[test]
+
+      - name: run tests
+        run: pytest
