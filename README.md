@@ -11,15 +11,29 @@ Datasette plugin to deploy on [Vercel][vercel], forked from [datasette-publish-v
 > As this plugin registers `publish vercel` command just like datasette-publish-vercel, remember to uninstall that first before installation.
 > `datasette uninstall datasette-publish-vercel`
 
+If you are in a hurry:
+
+```sh
+datasette install https://github.com/Vinfall/datasette2vercel/archive/main.zip
+```
+
+OR prefer building wheel to reuse it later:
+
 ```sh
 # build wheel
 git clone https://github.com/Vinfall/datasette2vercel
 cd datasette2vercel
-# remove uv prefix if you don't like it
+# use virtualenv or whatever you like if you don't want uv
+uv venv
+source .venv/bin/activate
 uv pip install .[dev]
 python3 -m build
+deactivate
+rm -rf .venv
 # install from dist
 datasette install dist/datasette2vercel-*-py3-none-any.whl
+# check installed plugins
+datasette plugins
 ```
 
 ## Usage
