@@ -1,9 +1,9 @@
 # datasette2vercel
 
-[![Test](https://github.com/Vinfall/datasette2vercel/workflows/Test/badge.svg)](https://github.com/Vinfall/datasette2vercel/actions?query=workflow%3ATest)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Vinfall/datasette2vercel/blob/main/LICENSE)
+[![Test][test-badge]][test-ci]
+[![License][license-badge]][license]
 
-Datasette plugin to deploy on [Vercel](https://vercel.com/), forked from [datasette-publish-vercel](https://github.com/simonw/datasette-publish-vercel).
+Datasette plugin to deploy on [Vercel][vercel], forked from [datasette-publish-vercel][datasette-publish-vercel].
 
 ## Install
 
@@ -103,20 +103,31 @@ If you want to add additional redirects or similar to your Vercel configuration 
 
 To do this, first generate a configuration file (without running a deploy) using the `--generate-vercel-json` option:
 
-    datasette publish vercel my-database.db \
-      --project=my-database \
-      --generate-vercel-json > vercel.json
+```sh
+datasette publish vercel my-database.db \
+  --project=my-database \
+  --generate-vercel-json > vercel.json
+```
 
 You can now edit the `vercel.json` file that this creates to add your custom options.
 
 Then run the deploy using:
 
-    datasette publish vercel my-database.db \
-      --project=my-database \
-      --vercel-json=vercel.json
+```sh
+datasette publish vercel my-database.db \
+  --project=my-database \
+  --vercel-json=vercel.json
+```
 
 ## Setting `DATASETTE_SECRET`
 
 Datasette uses [a secret string](https://docs.datasette.io/en/stable/settings.html#configuring-the-secret) for purposes such as signing authentication cookies. This secret is reset when the server restarts, which will sign out any users who are authenticated using a signed cookie.
 
 You can avoid this by generating a `DATASETTE_SECRET` secret string and setting that as a [Vercel environment variable](https://vercel.com/docs/concepts/projects/environment-variables). If you do this the secret will stay consistent and your users will not be signed out.
+
+[test-badge]: https://github.com/Vinfall/datasette2vercel/workflows/Test/badge.svg
+[test-ci]: https://github.com/Vinfall/datasette2vercel/actions/workflows/test.yml?query=workflow%3ATest
+[license-badge]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
+[license]: https://github.com/Vinfall/datasette2vercel/blob/main/LICENSE
+[vercel]: https://vercel.com/
+[datasette-publish-vercel]: https://github.com/simonw/datasette-publish-vercel
