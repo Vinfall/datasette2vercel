@@ -213,10 +213,12 @@ def _publish_vercel(
     if generate_dir:
         generate_dir = str(pathlib.Path(generate_dir).resolve())
 
+    # latest version of @vercel/python in `vercel.json`
+    # https://github.com/vercel/vercel/releases?q=python
     vercel_json_content = json.dumps(
         {
             "name": project,
-            "builds": [{"src": "index.py", "use": "@vercel/python@4.6.0"}],
+            "builds": [{"src": "index.py", "use": "@vercel/python@6.0.8"}],
             "routes": [{"src": "(.*)", "dest": "index.py"}],
         },
         indent=4,
