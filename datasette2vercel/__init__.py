@@ -70,7 +70,7 @@ class Setting(CompositeParamType):
                 param,
                 ctx,
             )
-            return
+            return None
         # Type checking
         default = DEFAULT_SETTINGS[name]
         if isinstance(default, bool):
@@ -78,18 +78,18 @@ class Setting(CompositeParamType):
                 return name, value_as_boolean(value)
             except ValueAsBooleanError:
                 self.fail(f'"{name}" should be on/off/true/false/1/0', param, ctx)
-                return
+                return None
         elif isinstance(default, int):
             if not value.isdigit():
                 self.fail(f'"{name}" should be an integer', param, ctx)
-                return
+                return None
             return name, int(value)
         elif isinstance(default, str):
             return name, value
         else:
             # Should never happen:
             self.fail("Invalid option")
-        return
+        return None
 
 
 class ProjectName(click.ParamType):
@@ -218,7 +218,7 @@ def _publish_vercel(
     vercel_json_content = json.dumps(
         {
             "name": project,
-            "builds": [{"src": "index.py", "use": "@vercel/python@6.0.8"}],
+            "builds": [{"src": "index.py", "use": "@vercel/python@6"}],
             "routes": [{"src": "(.*)", "dest": "index.py"}],
         },
         indent=4,
