@@ -1,6 +1,6 @@
 [project]
 name = "datasette2vercel"
-version = "0.16.1"
+version = "0.16.2"
 description = "Datasette plugin to deploy on Vercel"
 keywords = []
 authors = [{ name = "Simon Willison" }, { name = "Vinfall" }]
