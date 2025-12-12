@@ -34,6 +34,8 @@ rm -rf .venv
 datasette install dist/datasette2vercel-*-py3-none-any.whl
 # check installed plugins
 datasette plugins
+# or pipe to jq if you want colored output
+# datasette plugins | jq .
 ```
 
 ## Usage
