@@ -3,7 +3,9 @@ import os
 import pathlib
 import re
 import shutil
+from re import Pattern
 from subprocess import CalledProcessError, run
+from typing import LiteralString
 
 import click
 from click.types import CompositeParamType
@@ -18,7 +20,7 @@ from datasette.utils import (
     value_as_boolean,
 )
 
-INDEX_PY = """
+INDEX_PY: LiteralString = """
 import asyncio
 from datasette.app import Datasette
 import json
@@ -53,7 +55,11 @@ asyncio.run(ds.invoke_startup())
 app = ds.app()
 """.strip()
 
-project_name_re = re.compile(r"^[a-z0-9][a-z0-9-]{1,51}$")
+ROBOTS_TXT: LiteralString = """User-agent: *
+Disallow: /
+""".strip()
+
+project_name_re: Pattern[str] = re.compile(r"^[a-z0-9][a-z0-9-]{1,51}$")
 
 
 class Setting(CompositeParamType):
@@ -254,6 +260,7 @@ def _publish_vercel(
         # We don't actually want the Dockerfile
         os.remove("Dockerfile")
         open("vercel.json", "w").write(vercel_json_content)
+        open("robots.txt", "w").write(ROBOTS_TXT)
         extras = []
         if template_dir:
             extras.append('template_dir="templates"')

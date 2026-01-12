@@ -214,12 +214,13 @@ def test_publish_vercel_generate(generated_app_dir):
     filenames = set(os.listdir(generated_app_dir))
     assert {
         "requirements.txt",
+        "robots.txt",
         "static",
         "index.py",
         "vercel.json",
         "test.db",
     } == filenames
-    index_py = open(os.path.join(generated_app_dir, "index.py")).read()
+    index_py: str = open(os.path.join(generated_app_dir, "index.py")).read()
     assert index_py.strip() == (
         textwrap.dedent(
             """
@@ -257,6 +258,14 @@ def test_publish_vercel_generate(generated_app_dir):
     asyncio.run(ds.invoke_startup())
     app = ds.app()
     """
+        ).strip()
+    )
+    robots_txt: str = open(os.path.join(generated_app_dir, "robots.txt")).read()
+    assert robots_txt.strip() == (
+        textwrap.dedent(
+            """
+    User-agent: *
+    Disallow: /"""
         ).strip()
     )
 
