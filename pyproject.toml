@@ -48,3 +48,6 @@ ignore = [
     "T20", # print
 ]
 # unfixable = ["F401"]
+
+[tool.ty.rules]
+unresolved-import = "ignore" # .venv excluded from vsc workspace
