@@ -30,12 +30,14 @@ uv pip install .[dev]
 python3 -m build
 deactivate
 rm -rf .venv
+# chill, just unreachable caches (i.e. .venv we just deleted)
+uv cache prune
 # install from dist
 datasette install dist/datasette2vercel-*-py3-none-any.whl
 # check installed plugins
 datasette plugins
 # or pipe to jq if you want colored output
-# datasette plugins | jq .
+# datasette plugins | jq '.[] | select(.name=="datasette2vercel")'
 ```
 
 ## Usage
