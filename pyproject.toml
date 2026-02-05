@@ -2,23 +2,24 @@
 name = "datasette2vercel"
 version = "0.17.0"
 description = "Datasette plugin to deploy on Vercel"
-keywords = []
-authors = [{ name = "Simon Willison" }, { name = "Vinfall" }]
-requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.12"
 license = "Apache-2.0"
+authors = [{ name = "Simon Willison" }, { name = "Vinfall" }]
+keywords = []
 classifiers = ["Private :: Do Not Upload"]
-dependencies = ["setuptools>=80.9.0", "datasette>=0.65"]
-[project.optional-dependencies]
-test = ["pytest>=8.3.4"]
-dev = ["build>=1.3.0"]
-
-[project.entry-points.datasette]
-publish_vercel = "datasette2vercel"
+dependencies = ["datasette>=0.65", "setuptools>=80.9.0"]
 
 [project.urls]
 homepage = "https://github.com/Vinfall/datasette2vercel"
 source = "https://github.com/Vinfall/datasette2vercel"
+
+[project.entry-points.datasette]
+publish_vercel = "datasette2vercel"
+
+[project.optional-dependencies]
+dev = ["build>=1.3.0"]
+test = ["pytest>=8.3.4"]
 
 [build-system]
 requires = ["setuptools"]
@@ -32,20 +33,20 @@ unsafe-fixes = true
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN",
-    "E501", # EditorConfig
-    "COM", # commas
-    "D1", # docstring
-    "D212",
-    "D203", # prefer D211
-    "ERA", # commented-out-code
-    "FIX", # fixme
-    "TD002", # todo
-    "TD003",
-    "PLR2004", # magic-value-comparison
-    "PTH", # flake8-use-pathlib: slower than os
-    "RET505", # superfluous-else-return
-    "T20", # print
+  "ANN",
+  "E501", # EditorConfig
+  "COM", # commas
+  "D1", # docstring
+  "D212",
+  "D203", # prefer D211
+  "ERA", # commented-out-code
+  "FIX", # fixme
+  "TD002", # todo
+  "TD003",
+  "PLR2004", # magic-value-comparison
+  "PTH", # flake8-use-pathlib: slower than os
+  "RET505", # superfluous-else-return
+  "T20", # print
 ]
 # unfixable = ["F401"]
 
