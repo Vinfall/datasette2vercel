@@ -8,7 +8,7 @@ Datasette plugin to deploy on [Vercel][vercel], forked from [datasette-publish-v
 ## Install
 
 > [!NOTE]
-> As this plugin registers `publish vercel` command just like datasette-publish-vercel, remember to uninstall that first before installation.
+> As this plugin registers `publish vercel` command just like datasette-publish-vercel, uninstall that first before installation.
 > `datasette uninstall datasette-publish-vercel`
 
 If you are in a hurry:
@@ -17,7 +17,7 @@ If you are in a hurry:
 datasette install https://github.com/Vinfall/datasette2vercel/archive/main.zip
 ```
 
-OR prefer building wheel to reuse it later:
+OR build wheel to reuse it later:
 
 ```sh
 # build wheel
