@@ -43,7 +43,7 @@ datasette plugins
 ## Usage
 
 ```sh
-# install vercel-cli, https://vercel.com/download
+# install vercel-cli: https://vercel.com/docs/cli#installing-vercel-cli
 vercel login
 
 # publish mydb database to myproj project on Vercel
