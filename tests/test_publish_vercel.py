@@ -212,15 +212,18 @@ def generated_app_dir(mock_run, mock_which, tmp_path_factory):
 def test_publish_vercel_generate(generated_app_dir):
     # Test that the correct files were generated
     filenames = set(os.listdir(generated_app_dir))
-    assert {
+    assert "api" in filenames
+    assert "index.py" in os.listdir(os.path.join(generated_app_dir, "api"))
+    expected_files = {
         "requirements.txt",
         "robots.txt",
         "static",
-        "index.py",
+        "api",
         "vercel.json",
         "test.db",
-    } == filenames
-    index_py: str = open(os.path.join(generated_app_dir, "index.py")).read()
+    }
+    assert filenames == expected_files
+    index_py: str = open(os.path.join(generated_app_dir, "api/index.py")).read()
     assert index_py.strip() == (
         textwrap.dedent(
             """
@@ -326,8 +329,8 @@ def test_generate_vercel_json(mock_run, mock_which):
     assert json.loads(result.output) == {
         "name": "foo",
         "$schema": "https://openapi.vercel.sh/vercel.json",
-        "functions": {"index.py": {"runtime": "@vercel/python@6"}},
-        "rewrites": [{"source": "(.*)", "destination": "index.py"}],
+        "functions": {"api/index.py": {"runtime": "@vercel/python@6.26.0"}},
+        "rewrites": [{"source": "(.*)", "destination": "/api/index.py"}],
     }
 
 

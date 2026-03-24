@@ -225,8 +225,8 @@ def _publish_vercel(
         {
             "name": project,
             "$schema": "https://openapi.vercel.sh/vercel.json",
-            "functions": {"index.py": {"runtime": "@vercel/python@6"}},
-            "rewrites": [{"source": "(.*)", "destination": "index.py"}],
+            "functions": {"api/index.py": {"runtime": "@vercel/python@6.26.0"}},
+            "rewrites": [{"source": "(.*)", "destination": "/api/index.py"}],
         },
         indent=2,
     )
@@ -270,7 +270,8 @@ def _publish_vercel(
 
         statics = [item[0] for item in static]
 
-        open("index.py", "w").write(
+        os.makedirs("api", exist_ok=True)
+        open("api/index.py", "w").write(
             INDEX_PY.format(
                 database_files=json.dumps([os.path.split(f)[-1] for f in files]),
                 extras=", {}".format(", ".join(extras)) if extras else "",
