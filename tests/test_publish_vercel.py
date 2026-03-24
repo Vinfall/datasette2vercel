@@ -325,8 +325,9 @@ def test_generate_vercel_json(mock_run, mock_which):
     assert result.exit_code == 0
     assert json.loads(result.output) == {
         "name": "foo",
-        "builds": [{"src": "index.py", "use": "@vercel/python@6"}],
-        "routes": [{"src": "(.*)", "dest": "index.py"}],
+        "$schema": "https://openapi.vercel.sh/vercel.json",
+        "functions": {"index.py": {"runtime": "@vercel/python@6"}},
+        "rewrites": [{"source": "(.*)", "destination": "index.py"}],
     }
 
 
@@ -356,7 +357,7 @@ def test_vercel_json_errors(tmpdir):
     assert result2.exit_code == 1
     assert (
         result2.output
-        == "Error: Cannot use both --vercel-json and --generate-vercel-json\n"
+        == "Error: Mutually exclusive flags: --vercel-json, --generate-vercel-json\n"
     )
 
 

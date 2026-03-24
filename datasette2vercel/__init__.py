@@ -201,10 +201,10 @@ def _publish_vercel(
     crossdb,
 ):
     if vercel_json and generate_vercel_json:
-        msg = "Cannot use both --vercel-json and --generate-vercel-json"
+        msg = "Mutually exclusive flags: --vercel-json, --generate-vercel-json"
         raise click.ClickException(msg)
     fail_if_publish_binary_not_installed(
-        "vercel", "Vercel", "https://vercel.com/download"
+        "vercel", "Vercel", "https://vercel.com/docs/cli#installing-vercel-cli"
     )
     extra_metadata = {
         "title": title,
@@ -224,10 +224,11 @@ def _publish_vercel(
     vercel_json_content = json.dumps(
         {
             "name": project,
-            "builds": [{"src": "index.py", "use": "@vercel/python@6"}],
-            "routes": [{"src": "(.*)", "dest": "index.py"}],
+            "$schema": "https://openapi.vercel.sh/vercel.json",
+            "functions": {"index.py": {"runtime": "@vercel/python@6"}},
+            "rewrites": [{"source": "(.*)", "destination": "index.py"}],
         },
-        indent=4,
+        indent=2,
     )
     if generate_vercel_json:
         click.echo(vercel_json_content)
@@ -290,10 +291,10 @@ def _publish_vercel(
             # Copy these to the specified directory
             shutil.copytree(".", generate_dir)
             click.echo(
-                "Your generated application files have been written to:", err=True
+                "Application files have been written to:", err=True
             )
             click.echo(f"    {generate_dir}\n", err=True)
-            click.echo("To deploy using Vercel, run the following:")
+            click.echo("To deploy using Vercel, run:")
             click.echo(f"    cd {generate_dir}", err=True)
             click.echo("    vercel --prod", err=True)
         else:
