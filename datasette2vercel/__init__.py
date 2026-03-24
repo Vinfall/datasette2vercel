@@ -261,6 +261,7 @@ def _publish_vercel(
         # We don't actually want the Dockerfile
         os.remove("Dockerfile")
         open("vercel.json", "w").write(vercel_json_content)
+        open(".python-version", "w").write("3.14")
         open("robots.txt", "w").write(ROBOTS_TXT)
         extras = []
         if template_dir:

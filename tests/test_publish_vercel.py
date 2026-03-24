@@ -221,6 +221,7 @@ def test_publish_vercel_generate(generated_app_dir):
         "api",
         "vercel.json",
         "test.db",
+        ".python-version"
     }
     assert filenames == expected_files
     index_py: str = open(os.path.join(generated_app_dir, "api/index.py")).read()
