@@ -36,6 +36,7 @@ ignore = [
   "ANN",
   "E501", # EditorConfig
   "COM", # commas
+  "CPY", # copyright
   "D1", # docstring
   "D212",
   "D203", # prefer D211
