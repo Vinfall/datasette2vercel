@@ -292,9 +292,7 @@ def _publish_vercel(
         if generate_dir:
             # Copy these to the specified directory
             shutil.copytree(".", generate_dir)
-            click.echo(
-                "Application files have been written to:", err=True
-            )
+            click.echo("Application files have been written to:", err=True)
             click.echo(f"    {generate_dir}\n", err=True)
             click.echo("To deploy using Vercel, run:")
             click.echo(f"    cd {generate_dir}", err=True)
