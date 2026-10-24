@@ -225,7 +225,7 @@ def _publish_vercel(
         {
             "name": project,
             "$schema": "https://openapi.vercel.sh/vercel.json",
-            "functions": {"api/index.py": {"runtime": "@vercel/python@6.26.0"}},
+            "functions": {"api/index.py": {"runtime": "@vercel/python@6.54.1"}},
             "rewrites": [{"source": "(.*)", "destination": "/api/index.py"}],
         },
         indent=2,
