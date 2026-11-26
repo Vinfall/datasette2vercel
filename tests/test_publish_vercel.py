@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 import re
-import subprocess
+import shutil
 import textwrap
 from unittest import mock
 
@@ -12,200 +12,207 @@ from datasette import cli
 
 
 @mock.patch("shutil.which")
-def test_publish_vercel_requires_vercel_cli(mock_which):
+def test_publish_vercel_requires_vercel_cli(mock_which, tmp_path, monkeypatch):
     mock_which.return_value = False
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(
-            cli.cli, ["publish", "vercel", "test.db", "--project", "foo"]
-        )
-        assert result.exit_code == 1
-        assert "Publishing to Vercel requires vercel to be installed" in result.output
+    result = runner.invoke(
+        cli.cli, ["publish", "vercel", "test.db", "--project", "foo"]
+    )
+    assert result.exit_code == 1
+    assert "Publishing to Vercel requires vercel to be installed" in result.output
 
 
 @mock.patch("shutil.which")
-def test_publish_vercel_requires_project(mock_which):
+def test_publish_vercel_requires_project(mock_which, tmp_path, monkeypatch):
     mock_which.return_value = True
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(cli.cli, ["publish", "vercel", "test.db"])
-        assert result.exit_code == 2
-        assert "Missing option '--project'" in result.output
+    result = runner.invoke(cli.cli, ["publish", "vercel", "test.db"])
+    assert result.exit_code == 2
+    assert "Missing option '--project'" in result.output
 
 
 @pytest.mark.parametrize("bad_name", ["ABC", "-boo", "".join(["too-long"] * 10)])
 @mock.patch("shutil.which")
-def test_publish_vercel_invalid_project_name(mock_which, bad_name):
+def test_publish_vercel_invalid_project_name(
+    mock_which, bad_name, tmp_path, monkeypatch
+):
     mock_which.return_value = True
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(
-            cli.cli, ["publish", "vercel", "test.db", "--project", bad_name]
-        )
-        assert result.exit_code == 2
-        assert (
-            "Project name must be lowercase, alphanumeric, max 52 chars"
-            in result.output
-        )
+    result = runner.invoke(
+        cli.cli, ["publish", "vercel", "test.db", "--project", bad_name]
+    )
+    assert result.exit_code == 2
+    assert "Project name must be lowercase, alphanumeric, max 52 chars" in result.output
 
 
 @mock.patch("shutil.which")
 @mock.patch("datasette2vercel.run")
 @pytest.mark.parametrize("alias", ["vercel", "now"])
-def test_publish_vercel(mock_run, mock_which, alias):
+def test_publish_vercel(mock_run, mock_which, alias, tmp_path, monkeypatch):
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(
-            cli.cli,
-            ["publish", alias, "test.db", "--project", "foo", "--secret", "S"],
-        )
-        assert result.exit_code == 0
-        mock_run.assert_has_calls(
-            [
-                mock.call(
-                    [
-                        "vercel",
-                        "--yes",
-                        "--prod",
-                        "--env",
-                        "DATASETTE_SECRET=S",
-                    ],
-                    check=True,
-                ),
-            ]
-        )
+    result = runner.invoke(
+        cli.cli,
+        ["publish", alias, "test.db", "--project", "foo", "--secret", "S"],
+    )
+    assert result.exit_code == 0
+    mock_run.assert_has_calls(
+        [
+            mock.call(
+                [
+                    "vercel",
+                    "--yes",
+                    "--prod",
+                    "--env",
+                    "DATASETTE_SECRET=S",
+                ],
+                check=True,
+            ),
+        ]
+    )
 
 
 @mock.patch("shutil.which")
 @mock.patch("datasette2vercel.run")
-def test_publish_vercel_public(mock_run, mock_which):
+def test_publish_vercel_public(mock_run, mock_which, tmp_path, monkeypatch):
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(
-            cli.cli,
-            [
-                "publish",
-                "vercel",
-                "test.db",
-                "--project",
-                "foo",
-                "--public",
-                "--secret",
-                "S",
-            ],
-        )
-        assert result.exit_code == 0
-        mock_run.assert_has_calls(
-            [
-                mock.call(
-                    [
-                        "vercel",
-                        "--yes",
-                        "--prod",
-                        "--public",
-                        "--env",
-                        "DATASETTE_SECRET=S",
-                    ],
-                    check=True,
-                ),
-            ]
-        )
+    result = runner.invoke(
+        cli.cli,
+        [
+            "publish",
+            "vercel",
+            "test.db",
+            "--project",
+            "foo",
+            "--public",
+            "--secret",
+            "S",
+        ],
+    )
+    assert result.exit_code == 0
+    mock_run.assert_has_calls(
+        [
+            mock.call(
+                [
+                    "vercel",
+                    "--yes",
+                    "--prod",
+                    "--public",
+                    "--env",
+                    "DATASETTE_SECRET=S",
+                ],
+                check=True,
+            ),
+        ]
+    )
 
 
 @mock.patch("shutil.which")
 @mock.patch("datasette2vercel.run")
-def test_publish_vercel_token(mock_run, mock_which):
+def test_publish_vercel_token(mock_run, mock_which, tmp_path, monkeypatch):
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(
-            cli.cli,
-            [
-                "publish",
-                "vercel",
-                "test.db",
-                "--project",
-                "foo",
-                "--scope",
-                "myteam",
-                "--token",
-                "xyz",
-                "--secret",
-                "S",
-            ],
-        )
-        assert result.exit_code == 0
-        mock_run.assert_has_calls(
-            [
-                mock.call(
-                    [
-                        "vercel",
-                        "--yes",
-                        "--prod",
-                        "--token",
-                        "xyz",
-                        "--scope",
-                        "myteam",
-                        "--env",
-                        "DATASETTE_SECRET=S",
-                    ],
-                    check=True,
-                ),
-            ]
-        )
+    result = runner.invoke(
+        cli.cli,
+        [
+            "publish",
+            "vercel",
+            "test.db",
+            "--project",
+            "foo",
+            "--scope",
+            "myteam",
+            "--token",
+            "xyz",
+            "--secret",
+            "S",
+        ],
+    )
+    assert result.exit_code == 0
+    mock_run.assert_has_calls(
+        [
+            mock.call(
+                [
+                    "vercel",
+                    "--yes",
+                    "--prod",
+                    "--token",
+                    "xyz",
+                    "--scope",
+                    "myteam",
+                    "--env",
+                    "DATASETTE_SECRET=S",
+                ],
+                check=True,
+            ),
+        ]
+    )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 @mock.patch("shutil.which")
 @mock.patch("datasette2vercel.run")
-def generated_app_dir(mock_run, mock_which, tmp_path_factory):
+def generated_app_dir(mock_run, mock_which, tmp_path_factory, monkeypatch):
     appdir = os.path.join(tmp_path_factory.mktemp("generated-app"), "app")
+    monkeypatch.chdir(tmp_path_factory.mktemp("publish-cwd"))
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        static_dir = pathlib.Path(".") / "static"
-        static_dir.mkdir()
-        (static_dir / "my.css").write_text("body { color: red }")
-        result = runner.invoke(
-            cli.cli,
-            [
-                "publish",
-                "vercel",
-                "test.db",
-                "--project",
-                "foo",
-                "--public",
-                "--static",
-                "static:static",
-                "--setting",
-                "default_page_size",
-                "10",
-                "--setting",
-                "sql_time_limit_ms",
-                "2000",
-                "--setting",
-                "allow_download",
-                "0",
-                "--crossdb",
-                "--generate-dir",
-                appdir,
-            ],
-        )
-        assert result.exit_code == 0, result.output
-        assert not mock_run.called
+    pathlib.Path("test.db").write_text("data")
+    static_dir = pathlib.Path("static")
+    static_dir.mkdir()
+    (static_dir / "my.css").write_text("body { color: red }")
+
+    result = runner.invoke(
+        cli.cli,
+        [
+            "publish",
+            "vercel",
+            "test.db",
+            "--project",
+            "foo",
+            "--public",
+            "--static",
+            "static:static",
+            "--setting",
+            "default_page_size",
+            "10",
+            "--setting",
+            "sql_time_limit_ms",
+            "2000",
+            "--setting",
+            "allow_download",
+            "0",
+            "--crossdb",
+            "--generate-dir",
+            appdir,
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert not mock_run.called
     return appdir
 
 
@@ -221,7 +228,7 @@ def test_publish_vercel_generate(generated_app_dir):
         "api",
         "vercel.json",
         "test.db",
-        ".python-version"
+        ".python-version",
     }
     assert filenames == expected_files
     index_py: str = open(os.path.join(generated_app_dir, "api/index.py")).read()
@@ -330,14 +337,19 @@ def test_generate_vercel_json(mock_run, mock_which):
     assert json.loads(result.output) == {
         "name": "foo",
         "$schema": "https://openapi.vercel.sh/vercel.json",
-        "functions": {"api/index.py": {"runtime": "@vercel/python@6.26.0"}},
+        "functions": {"api/index.py": {"runtime": "@vercel/python@6.54.1"}},
         "rewrites": [{"source": "(.*)", "destination": "/api/index.py"}],
     }
 
 
-def test_vercel_json_errors(tmpdir):
-    bad_json = tmpdir / "bad.json"
-    bad_json.write_text("{", "utf-8")
+def test_vercel_json_errors(tmp_path):
+    # skip
+    if shutil.which("vercel") is None:
+        pytest.skip("vercel CLI is not installed")
+
+    bad_json = tmp_path / "bad.json"
+    bad_json.write_text("{", encoding="utf-8")
+
     runner = CliRunner()
     result = runner.invoke(
         cli.cli,
@@ -345,6 +357,7 @@ def test_vercel_json_errors(tmpdir):
     )
     assert result.exit_code == 1
     assert result.output == "Error: --vercel-json contents must be valid JSON\n"
+
     # --generate-vercel-json and --vercel-json not allowed together
     result2 = runner.invoke(
         cli.cli,
@@ -367,30 +380,34 @@ def test_vercel_json_errors(tmpdir):
 
 @mock.patch("shutil.which")
 @mock.patch("datasette2vercel.run")
-def test_custom_vercel_json(mock_run, mock_which, tmp_path_factory, tmpdir):
+def test_custom_vercel_json(
+    mock_run, mock_which, tmp_path_factory, tmp_path, monkeypatch
+):
     appdir = os.path.join(tmp_path_factory.mktemp("generated-app-vercel-json"), "app")
-    vercel_json = tmpdir / "vercel.json"
+    vercel_json = tmp_path / "vercel.json"
     vercel_json.write_text('{"foo": "bar"}', "utf-8")
+
     mock_which.return_value = True
     mock_run.return_value = mock.Mock(0)
+    monkeypatch.chdir(tmp_path)
+    pathlib.Path("test.db").write_text("data")
+
     runner = CliRunner()
-    with runner.isolated_filesystem():
-        open("test.db", "w").write("data")
-        result = runner.invoke(
-            cli.cli,
-            [
-                "publish",
-                "vercel",
-                "test.db",
-                "--project",
-                "foo",
-                "--vercel-json",
-                vercel_json,
-                "--generate-dir",
-                appdir,
-            ],
-        )
-        assert result.exit_code == 0, result.output
-        assert not mock_run.called
-        # appdir / vercel.json should be our custom code
-        assert (pathlib.Path(appdir) / "vercel.json").open().read() == '{"foo": "bar"}'
+    result = runner.invoke(
+        cli.cli,
+        [
+            "publish",
+            "vercel",
+            "test.db",
+            "--project",
+            "foo",
+            "--vercel-json",
+            vercel_json,
+            "--generate-dir",
+            appdir,
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert not mock_run.called
+    # appdir / vercel.json should be our custom code
+    assert (pathlib.Path(appdir) / "vercel.json").open().read() == '{"foo": "bar"}'
